@@ -1,6 +1,6 @@
 import pandas as pd 
 
-def slice_and_clean():
+def tnfa_response(Moderates=False):
 
 	full_DF = pd.read_csv('tnfa_response_expression.txt')
 	full_metadata_DF = pd.read_csv('tnfa_response_metadata.txt')
@@ -17,13 +17,15 @@ def slice_and_clean():
 			if full_metadata_DF[sample].loc['characteristics_ch1.4'].split(': ')[1] == 'Placebo':
 				drop_list.append(sample)
 			#Remove the moderate responders from GSE58795
-			if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'moderate':
-				drop_list.append(sample)
+			if Moderates == False:
+				if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'moderate':
+					drop_list.append(sample)
 
 		if sample.split('._.')[0] == 'GSE15258':
 			#Remove the MEDIUM responders
-			if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'MEDIUM':
-				drop_list.append(sample)
+			if Moderates == False:
+				if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'MEDIUM':
+					drop_list.append(sample)
 			#Remove the NA responders
 			if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'NA':
 				drop_list.append(sample)
@@ -50,12 +52,18 @@ def slice_and_clean():
 				response = 0
 			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'responder':
 				response = 1
+			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'moderate':
+				if Moderates == 1: response = 1
+				if Moderates == 2: response = 2
 
 		if sample.split('._.')[0] == 'GSE15258':
 			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'NORESPONSE':
 				response = 0
 			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'RESPONSE':
 				response = 1
+			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(': ')[1] == 'MEDIUM':
+				if Moderates == 1: response = 1
+				if Moderates == 2: response = 2
 
 		if sample.split('._.')[0] == 'GSE33377':
 			if subset_metadata_DF[sample].loc['characteristics_ch1.2'].split(' ')[2] == 'non-responder':
@@ -71,7 +79,7 @@ def slice_and_clean():
 
 		response_list.append(response)
 
-	return subset_DF, response_list
+	return subset_DF, subset_metadata_DF, response_list
 
 
 
