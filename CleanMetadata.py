@@ -82,7 +82,72 @@ def tnfa_response(Moderates=False):
 	return subset_DF, subset_metadata_DF, response_list
 
 
+def rituximab_response(Moderates=False):
 
+	full_DF = pd.read_csv('Rituximab_response_expression.txt')
+	full_metadata_DF = pd.read_csv('Rituximab_response_metadata.txt')
+
+	full_metadata_DF.columns = full_DF.columns.values
+
+	#Drop patients you don't want
+	drop_list = []
+
+	for sample in full_metadata_DF:
+		
+		if sample.split('._.')[0] == 'GSE24742':
+			#Remove 12 week follow up from GSE24742
+			if full_metadata_DF[sample].loc['characteristics_ch1'].split(': ')[1] == '12 weeks of RTX therapy':
+				drop_list.append(sample)
+			if Moderates == False:
+				if full_metadata_DF[sample].loc['characteristics_ch1.5'].split(' ')[2] == 'Moderate-responder':
+					drop_list.append(sample)
+			
+		if sample.split('._.')[0] == 'GSE54629':
+			#Remove 24 week follow up from GSE54629
+			if full_metadata_DF[sample].loc['characteristics_ch1.1'].split(' ')[3] == 'week':
+				drop_list.append(sample)
+			if Moderates == False:
+				if full_metadata_DF[sample].loc['characteristics_ch1.3'].split(' ')[1] == 'moderate-responder':
+					drop_list.append(sample)
+
+	subset_DF = full_DF.drop(set(drop_list), axis=1)
+	subset_metadata_DF = full_metadata_DF.drop(set(drop_list), axis=1)
+
+	#Make responder list
+
+	response_list = []
+
+	response = 'error'
+
+	for sample in subset_metadata_DF:
+
+		if sample.split('._.')[0] == 'GSE37107':
+			if subset_metadata_DF[sample].loc['characteristics_ch1.1'].split(' ')[2] == 'non-responder':
+				response = 0
+			if subset_metadata_DF[sample].loc['characteristics_ch1.1'].split(' ')[2] == 'responder':
+				response = 1
+
+		if sample.split('._.')[0] == 'GSE24742':
+			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(' ')[2] == 'Poor-responder':
+				response = 0
+			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(' ')[2] == 'Moderate-responder':
+				if Moderates == 1: response = 1
+				if Moderates == 2: response = 2
+			if subset_metadata_DF[sample].loc['characteristics_ch1.5'].split(' ')[2] == 'Good-responder':
+				response = 1
+
+		if sample.split('._.')[0] == 'GSE54629':
+			if subset_metadata_DF[sample].loc['characteristics_ch1.3'].split(' ')[1] == 'non-responder':
+				response = 0
+			if subset_metadata_DF[sample].loc['characteristics_ch1.3'].split(' ')[1] == 'moderate-responder':
+				if Moderates == 1: response = 1
+				if Moderates == 2: response = 2
+			if subset_metadata_DF[sample].loc['characteristics_ch1.3'].split(' ')[1] == 'responder':
+				response = 1
+
+		response_list.append(response)
+
+	return subset_DF, subset_metadata_DF, response_list
 
 
 
