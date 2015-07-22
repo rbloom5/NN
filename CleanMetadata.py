@@ -74,6 +74,116 @@ def slice_and_clean():
 	return subset_DF, response_list
 
 
+def slice_and_clean_12051():
+
+	full_DF = pd.read_csv('tnfa_response_expression.txt')
+	full_metadata_DF = pd.read_csv('tnfa_response_metadata.txt')
+
+	full_metadata_DF.columns = full_DF.columns
+
+	#Drop patients you don't want
+	drop_list = []
+
+
+	#Make responder list
+
+	response_list = []
+	response = 'error'
+	for sample in full_metadata_DF:
+
+		if sample.split('._.')[0] == 'GSE12051':
+			if full_metadata_DF[sample].loc['characteristics_ch1'].split(': ')[1] == 'nonresponder':
+				response = 0
+			if full_metadata_DF[sample].loc['characteristics_ch1'].split(': ')[1] == 'responder':
+				response = 1
+			response_list.append(response)
+
+		else:
+			drop_list.append(sample)
+
+
+	subset_DF = full_DF.drop(set(drop_list), axis=1)
+
+	return subset_DF, response_list
+
+
+
+
+
+def slice_and_clean_33377():
+
+	full_DF = pd.read_csv('tnfa_response_expression.txt')
+	full_metadata_DF = pd.read_csv('tnfa_response_metadata.txt')
+
+	full_metadata_DF.columns = full_DF.columns
+
+	#Drop patients you don't want
+	drop_list = []
+
+
+	#Make responder list
+
+	response_list = []
+	response = 'error'
+	for sample in full_metadata_DF:
+
+		if sample.split('._.')[0] == 'GSE33377':
+			if full_metadata_DF[sample].loc['characteristics_ch1.2'].split(' ')[2] == 'non-responder':
+				response = 0
+			if full_metadata_DF[sample].loc['characteristics_ch1.2'].split(' ')[2] == 'responder':
+				response = 1
+			response_list.append(response)
+
+		else:
+			drop_list.append(sample)
+
+	subset_DF = full_DF.drop(set(drop_list), axis=1)
+
+	return subset_DF, response_list
+
+
+
+
+
+def slice_and_clean_12051_33377():
+
+	full_DF = pd.read_csv('tnfa_response_expression.txt')
+	full_metadata_DF = pd.read_csv('tnfa_response_metadata.txt')
+
+	full_metadata_DF.columns = full_DF.columns
+
+	#Drop patients you don't want
+	drop_list = []
+
+
+	#Make responder list
+
+	response_list = []
+	response = 'error'
+	for sample in full_metadata_DF:
+
+		if (sample.split('._.')[0] == 'GSE12051') or (sample.split('._.')[0] == 'GSE33377'):
+
+			if sample.split('._.')[0] == 'GSE12051':
+				if full_metadata_DF[sample].loc['characteristics_ch1'].split(': ')[1] == 'nonresponder':
+					response = 0
+				if full_metadata_DF[sample].loc['characteristics_ch1'].split(': ')[1] == 'responder':
+					response = 1
+				response_list.append(response)
+
+			if sample.split('._.')[0] == 'GSE33377':
+				if full_metadata_DF[sample].loc['characteristics_ch1.2'].split(' ')[2] == 'non-responder':
+					response = 0
+				if full_metadata_DF[sample].loc['characteristics_ch1.2'].split(' ')[2] == 'responder':
+					response = 1
+				response_list.append(response)
+
+		else:
+			drop_list.append(sample)
+
+	subset_DF = full_DF.drop(set(drop_list), axis=1)
+
+	return subset_DF, response_list
 
 
 
